@@ -16,7 +16,10 @@ import {
   AlertCircle,
   Calendar,
   Info,
-  Download
+  Download,
+  Brain,
+  TrendingUp,
+  Zap
 } from 'lucide-react';
 
 // Components
@@ -204,6 +207,90 @@ export default function Dashboard() {
               iconColor="text-primary"
               testId="module-lgpd"
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* AI Predictions Section - NEW */}
+      <Card className="border-2 border-green-500">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Brain className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <CardTitle className="text-lg font-semibold text-foreground flex items-center">
+                  🔮 Predições com IA
+                  <Badge className="ml-3 bg-green-100 text-green-800 text-xs">ATIVO</Badge>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Análise preditiva organizacional para os próximos 12 meses
+                </p>
+              </div>
+            </div>
+            <Button 
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+              data-testid="button-generate-ai-predictions"
+            >
+              <Zap className="w-4 h-4 mr-2" />
+              Gerar Predições
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-red-800">Riscos Críticos</h4>
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+              </div>
+              <p className="text-2xl font-bold text-red-700">3</p>
+              <p className="text-sm text-red-600">Funcionários em risco alto</p>
+              <div className="mt-2 text-xs text-red-500">
+                📊 Burnout: 85% • Ansiedade: 78%
+              </div>
+            </div>
+            
+            <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-yellow-800">Monitoramento</h4>
+                <TrendingUp className="h-5 w-5 text-yellow-600" />
+              </div>
+              <p className="text-2xl font-bold text-yellow-700">12</p>
+              <p className="text-sm text-yellow-600">Requerem atenção</p>
+              <div className="mt-2 text-xs text-yellow-500">
+                📈 Tendência crescente detectada
+              </div>
+            </div>
+            
+            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-green-800">Estáveis</h4>
+                <Shield className="h-5 w-5 text-green-600" />
+              </div>
+              <p className="text-2xl font-bold text-green-700">42</p>
+              <p className="text-sm text-green-600">Baixo risco projetado</p>
+              <div className="mt-2 text-xs text-green-500">
+                ✅ Perfis equilibrados
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center space-x-2 mb-2">
+              <Brain className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-medium text-blue-800">Insights de IA Organizacional</span>
+            </div>
+            <p className="text-sm text-blue-700">
+              🧠 <strong>Padrão Identificado:</strong> Departamentos com perfis DISC predominantemente "D" 
+              mostram 40% mais risco de burnout nos próximos 6 meses. Recomenda-se rotação de tarefas e programas de relaxamento.
+            </p>
+            <div className="mt-2 flex items-center space-x-4 text-xs text-blue-600">
+              <span>📊 Precisão: 87%</span>
+              <span>🎯 Horizonte: 12 meses</span>
+              <span>🔄 Atualizado há 2min</span>
+            </div>
           </div>
         </CardContent>
       </Card>

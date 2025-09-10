@@ -20,6 +20,7 @@ from src.routes.ai_analysis import ai_analysis_bp
 from src.routes.behavioral_analysis import behavioral_analysis_bp
 from src.routes.ai_predictions import ai_predictions_bp
 from src.routes.ai_predictions_manager import ai_predictions_manager_bp
+from src.routes.government_apis import government_apis_bp
 from datetime import datetime
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
@@ -50,6 +51,7 @@ app.register_blueprint(ai_analysis_bp, url_prefix='/api/v1')
 app.register_blueprint(behavioral_analysis_bp, url_prefix='/api/v1')
 app.register_blueprint(ai_predictions_bp, url_prefix='/api/v1')
 app.register_blueprint(ai_predictions_manager_bp, url_prefix='/api/v1')
+app.register_blueprint(government_apis_bp, url_prefix='/api/v1')
 
 @app.route('/')
 def index():

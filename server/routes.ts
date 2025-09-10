@@ -1,15 +1,20 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { storage } from "./storage";
-import { insertUserSchema, insertCompanySchema, loginSchema, insertDiscAssessmentSchema, insertMentalHealthAssessmentSchema, insertPsychosocialRiskSchema, insertActionPlanSchema } from "@shared/schema";
+import { insertUserSchema, insertCompanySchema, loginSchema, insertDiscAssessmentSchema, insertMentalHealthAssessmentSchema, insertPsychosocialRiskSchema, insertActionPlanSchema, type User } from "@shared/schema";
 import { z } from "zod";
 
 const JWT_SECRET = process.env.JWT_SECRET || "minddisc-pro-secret-key";
 
+// Extend Request interface to include user
+interface AuthenticatedRequest extends Request {
+  user?: User;
+}
+
 // Middleware to verify JWT token
-const authenticateToken = async (req: any, res: any, next: any) => {
+const authenticateToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -125,7 +130,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User routes
-  app.get("/api/users/me", authenticateToken, async (req, res) => {
+  app.get("/api/users/me", authenticateToken, async (req: AuthenticatedRequest, res) => {
     res.json(req.user);
   });
 

@@ -7,6 +7,7 @@ from flask import Flask, send_from_directory, jsonify
 from flask_cors import CORS
 from src.models.user import db, User
 from src.models.assessment import DiscAssessment, MentalHealthAssessment, PersonalizedInsight, ComplianceReport
+from src.models.ai_analysis import AIAnalysis, AIAnalysisStatistics
 from src.models.compliance import (
     ConsentManagement, DataProcessingLog, ProfessionalOversight, 
     LicensedProfessional, AIGovernance, DataRetentionPolicy,
@@ -15,6 +16,7 @@ from src.models.compliance import (
 from src.routes.user import user_bp
 from src.routes.assessment import assessment_bp
 from src.routes.compliance_api import compliance_bp
+from src.routes.ai_analysis import ai_analysis_bp
 from datetime import datetime
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
@@ -41,6 +43,7 @@ db.init_app(app)
 app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(assessment_bp, url_prefix='/api')
 app.register_blueprint(compliance_bp, url_prefix='/api/v1')
+app.register_blueprint(ai_analysis_bp, url_prefix='/api/v1')
 
 @app.route('/')
 def index():

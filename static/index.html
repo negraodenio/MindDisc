@@ -273,6 +273,7 @@
             
             <button class="test-button" onclick="testAPI()">🧪 Testar API</button>
             <button class="test-button" onclick="checkCompliance()">🔍 Verificar Compliance</button>
+            <button class="test-button" onclick="openEmployeePortal()">👤 Portal do Funcionário</button>
         </div>
         
         <div class="footer">
@@ -309,6 +310,10 @@
             } catch (error) {
                 alert(`❌ Erro ao verificar compliance: ${error.message}`);
             }
+        }
+        
+        function openEmployeePortal() {
+            window.open('/employee.html', '_blank');
         }
         
         // Auto-check health on load

@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind-Bridge - Portal do Funcionário</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .question-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+        
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .results {
+            text-align: center;
+        }
+        
+        .profile-chart {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .profile-item {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-letter {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .profile-score {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .profile-name {
+            font-size: 14px;
+            color: #718096;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #c6f6d5;
+            border: 1px solid #9ae6b4;
+            color: #22543d;
+        }
+        
+        .alert-info {
+            background: #bee3f8;
+            border: 1px solid #90cdf4;
+            color: #2a4365;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Portal do Funcionário</h1>
+            <p>Sistema de Avaliação DISC e Bem-estar</p>
+        </div>
+
+        <!-- Seção de Registro/Login -->
+        <div id="loginSection" class="card">
+            <h2>Acesso ao Sistema</h2>
+            <div class="form-group">
+                <label for="employeeName">Nome Completo:</label>
+                <input type="text" id="employeeName" placeholder="Seu nome completo">
+            </div>
+            <div class="form-group">
+                <label for="employeeEmail">Email:</label>
+                <input type="email" id="employeeEmail" placeholder="seu.email@empresa.com">
+            </div>
+            <div class="form-group">
+                <label for="employeeCompany">Empresa:</label>
+                <input type="text" id="employeeCompany" placeholder="Nome da sua empresa">
+            </div>
+            <button class="btn" onclick="registerEmployee()">Acessar Sistema</button>
+        </div>
+
+        <!-- Seção de Consentimento GDPR -->
+        <div id="consentSection" class="card hidden">
+            <h2>🔒 Consentimento de Dados (GDPR)</h2>
+            <div class="alert alert-info">
+                <strong>Proteção de Dados:</strong> Seus dados serão processados de acordo com o GDPR e utilizados apenas para análise de bem-estar e desenvolvimento profissional.
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="consentDISC"> 
+                    Autorizo a realização de avaliação DISC para análise de perfil comportamental
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="consentMentalHealth"> 
+                    Autorizo avaliações de bem-estar mental para suporte e recursos
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="consentPredictive"> 
+                    Autorizo análise preditiva para recomendações personalizadas
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="consentProfessional"> 
+                    Autorizo supervisão profissional em casos de necessidade
+                </label>
+            </div>
+            
+            <button class="btn" onclick="saveConsent()">Confirmar Consentimentos</button>
+        </div>
+
+        <!-- Seção do Teste DISC -->
+        <div id="testSection" class="card hidden">
+            <h2>📊 Avaliação DISC</h2>
+            <div class="alert alert-info">
+                <strong>Instruções:</strong> Para cada afirmação, escolha o número que melhor descreve você:
+                <br>1 = Nunca | 2 = Raramente | 3 = Às vezes | 4 = Frequentemente | 5 = Sempre
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                Pergunta <span id="currentQuestion">1</span> de <span id="totalQuestions">20</span>
+            </div>
+            
+            <div id="questionsContainer"></div>
+            
+            <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>Próxima Pergunta</button>
+            <button class="btn hidden" id="finishBtn" onclick="finishTest()">Finalizar Avaliação</button>
+        </div>
+
+        <!-- Seção de Avaliação Mental -->
+        <div id="mentalHealthSection" class="card hidden">
+            <h2>🧘 Avaliação de Bem-estar Mental</h2>
+            <div class="alert alert-info">
+                <strong>Protocolos Validados:</strong> Esta avaliação utiliza instrumentos científicos reconhecidos (PHQ-9, GAD-7, Maslach) para screening de bem-estar mental.
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="mentalProgressFill"></div>
+            </div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                Pergunta <span id="currentMentalQuestion">1</span> de <span id="totalMentalQuestions">27</span>
+            </div>
+            
+            <div id="mentalQuestionsContainer"></div>
+            
+            <button class="btn" id="nextMentalBtn" onclick="nextMentalQuestion()" disabled>Próxima Pergunta</button>
+            <button class="btn hidden" id="finishMentalBtn" onclick="finishMentalTest()">Finalizar Avaliação Mental</button>
+        </div>
+
+        <!-- Seção de Resultados -->
+        <div id="resultsSection" class="card hidden">
+            <h2>🎯 Seus Resultados Completos</h2>
+            <div class="alert alert-success">
+                <strong>Avaliações Concluídas!</strong> Seus resultados foram processados com conformidade GDPR e supervisão profissional quando necessário.
+            </div>
+            
+            <!-- Resultados DISC -->
+            <div class="card" style="margin-bottom: 20px;">
+                <h3>📊 Perfil DISC</h3>
+                <div class="profile-chart" id="profileChart"></div>
+                <div id="profileDescription"></div>
+            </div>
+            
+            <!-- Resultados Saúde Mental -->
+            <div class="card" style="margin-bottom: 20px;">
+                <h3>🧘 Bem-estar Mental</h3>
+                <div id="mentalHealthResults"></div>
+                <div id="professionalRecommendations"></div>
+            </div>
+            
+            <div id="personalizedInsights"></div>
+            
+            <button class="btn" onclick="exportResults()">📥 Exportar Resultados (GDPR)</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let currentMentalQuestionIndex = 0;
+        let mentalAnswers = [];
+        
+        // Perguntas DISC simplificadas
+        const discQuestions = [
+            { text: "Eu gosto de liderar projetos e tomar decisões importantes", category: 'D' },
+            { text: "Eu me sinto confortável assumindo riscos calculados", category: 'D' },
+            { text: "Eu prefiro trabalhar de forma independente", category: 'D' },
+            { text: "Eu gosto de conhecer pessoas novas e fazer networking", category: 'I' },
+            { text: "Eu me sinto energizado trabalhando em equipe", category: 'I' },
+            { text: "Eu gosto de apresentações e falar em público", category: 'I' },
+            { text: "Eu valorizo estabilidade e consistência no trabalho", category: 'S' },
+            { text: "Eu prefiro evitar conflitos e manter harmonia", category: 'S' },
+            { text: "Eu gosto de ajudar colegas quando precisam", category: 'S' },
+            { text: "Eu presto atenção aos detalhes e precisão", category: 'C' },
+            { text: "Eu gosto de analisar dados antes de tomar decisões", category: 'C' },
+            { text: "Eu prefiro seguir procedimentos estabelecidos", category: 'C' },
+            { text: "Eu me adapto rapidamente a mudanças", category: 'D' },
+            { text: "Eu gosto de motivar e inspirar outros", category: 'I' },
+            { text: "Eu sou paciente com processos longos", category: 'S' },
+            { text: "Eu questiono informações para verificar precisão", category: 'C' },
+            { text: "Eu prefiro resultados rápidos", category: 'D' },
+            { text: "Eu gosto de celebrar conquistas com a equipe", category: 'I' },
+            { text: "Eu mantenho um ritmo de trabalho constante", category: 'S' },
+            { text: "Eu gosto de criar sistemas organizados", category: 'C' }
+        ];
+
+        // Questionários de Saúde Mental (PHQ-9, GAD-7, Maslach Burnout)
+        const mentalHealthQuestions = [
+            // PHQ-9 - Depressão (9 perguntas)
+            { text: "Pouco interesse ou prazer em fazer as coisas", protocol: 'PHQ9', scale: 'frequency' },
+            { text: "Se sentir deprimido(a), triste ou sem esperança", protocol: 'PHQ9', scale: 'frequency' },
+            { text: "Dificuldade para pegar no sono, continuar dormindo ou dormir demais", protocol: 'PHQ9', scale: 'frequency' },
+            { text: "Se sentir cansado(a) ou com pouca energia", protocol: 'PHQ9', scale: 'frequency' },
+            { text: "Pouco apetite ou comendo demais", protocol: 'PHQ9', scale: 'frequency' },
+            { text: "Se sentir mal consigo mesmo(a) ou sentir que é um fracasso", protocol: 'PHQ9', scale: 'frequency' },
+            { text: "Dificuldade para se concentrar nas tarefas", protocol: 'PHQ9', scale: 'frequency' },
+            { text: "Movimentar-se ou falar tão devagar que outras pessoas percebem", protocol: 'PHQ9', scale: 'frequency' },
+            { text: "Pensar que seria melhor estar morto(a) ou se ferir de alguma forma", protocol: 'PHQ9', scale: 'frequency' },
+
+            // GAD-7 - Ansiedade (7 perguntas)
+            { text: "Se sentir nervoso(a), ansioso(a) ou muito tenso(a)", protocol: 'GAD7', scale: 'frequency' },
+            { text: "Não conseguir parar ou controlar as preocupações", protocol: 'GAD7', scale: 'frequency' },
+            { text: "Preocupar-se demais com coisas diferentes", protocol: 'GAD7', scale: 'frequency' },
+            { text: "Dificuldade para relaxar", protocol: 'GAD7', scale: 'frequency' },
+            { text: "Ficar tão agitado(a) que se torna difícil permanecer parado(a)", protocol: 'GAD7', scale: 'frequency' },
+            { text: "Ficar facilmente irritado(a) ou facilmente incomodado(a)", protocol: 'GAD7', scale: 'frequency' },
+            { text: "Sentir medo como se algo horrível fosse acontecer", protocol: 'GAD7', scale: 'frequency' },
+
+            // Burnout (11 perguntas simplificadas)
+            { text: "Me sinto emocionalmente exaurido(a) pelo meu trabalho", protocol: 'BURNOUT', scale: 'frequency' },
+            { text: "Me sinto esgotado(a) no final do dia de trabalho", protocol: 'BURNOUT', scale: 'frequency' },
+            { text: "Me sinto fatigado(a) quando acordo e tenho que enfrentar outro dia", protocol: 'BURNOUT', scale: 'frequency' },
+            { text: "Trabalhar com pessoas o dia todo me causa estresse", protocol: 'BURNOUT', scale: 'frequency' },
+            { text: "Me sinto como se estivesse no limite", protocol: 'BURNOUT', scale: 'frequency' },
+            { text: "Realmente não me importo com o que acontece com algumas pessoas", protocol: 'BURNOUT', scale: 'frequency' },
+            { text: "Trabalhar diretamente com pessoas me deixa muito estressado", protocol: 'BURNOUT', scale: 'frequency' },
+            { text: "Posso resolver efetivamente os problemas que surgem no trabalho", protocol: 'BURNOUT', scale: 'effectiveness' },
+            { text: "Sinto que influencio positivamente a vida das pessoas através do trabalho", protocol: 'BURNOUT', scale: 'effectiveness' },
+            { text: "Me tornei mais insensível com as pessoas desde que comecei este trabalho", protocol: 'BURNOUT', scale: 'frequency' },
+            { text: "Me sinto cheio(a) de energia", protocol: 'BURNOUT', scale: 'effectiveness' }
+        ];
+
+        function registerEmployee() {
+            const name = document.getElementById('employeeName').value;
+            const email = document.getElementById('employeeEmail').value;
+            const company = document.getElementById('employeeCompany').value;
+            
+            if (!name || !email || !company) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+            
+            // Criar usuário via API
+            fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    company: company
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.user) {
+                    currentUser = data.user;
+                    showSection('consentSection');
+                } else {
+                    alert('Erro ao registrar: ' + (data.error || 'Erro desconhecido'));
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro de conexão com o servidor');
+            });
+        }
+
+        function saveConsent() {
+            const consents = {
+                disc_assessment: document.getElementById('consentDISC').checked,
+                mental_health_screening: document.getElementById('consentMentalHealth').checked,
+                predictive_analysis: document.getElementById('consentPredictive').checked,
+                professional_supervision: document.getElementById('consentProfessional').checked
+            };
+            
+            // Salvar consentimento via API
+            fetch(`/api/users/${currentUser.id}/consent`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(consents)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (consents.disc_assessment) {
+                    initializeTest();
+                    showSection('testSection');
+                } else {
+                    alert('É necessário autorizar a avaliação DISC para continuar');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao salvar consentimento');
+            });
+        }
+
+        function showSection(sectionId) {
+            const sections = ['loginSection', 'consentSection', 'testSection', 'mentalHealthSection', 'resultsSection'];
+            sections.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        function initializeTest() {
+            currentQuestionIndex = 0;
+            answers = [];
+            document.getElementById('totalQuestions').textContent = discQuestions.length;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = discQuestions[currentQuestionIndex];
+            const container = document.getElementById('questionsContainer');
+            
+            container.innerHTML = `
+                <div class="question-card">
+                    <div class="question-text">${question.text}</div>
+                    <div class="options">
+                        <div class="option" onclick="selectAnswer(1)">1<br>Nunca</div>
+                        <div class="option" onclick="selectAnswer(2)">2<br>Raramente</div>
+                        <div class="option" onclick="selectAnswer(3)">3<br>Às vezes</div>
+                        <div class="option" onclick="selectAnswer(4)">4<br>Frequentemente</div>
+                        <div class="option" onclick="selectAnswer(5)">5<br>Sempre</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            updateProgress();
+        }
+
+        function selectAnswer(score) {
+            // Remover seleção anterior
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Selecionar nova opção
+            event.target.classList.add('selected');
+            
+            // Salvar resposta
+            answers[currentQuestionIndex] = {
+                question: currentQuestionIndex,
+                category: discQuestions[currentQuestionIndex].category,
+                score: score
+            };
+            
+            // Habilitar botão
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            if (currentQuestionIndex === discQuestions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+                finishBtn.disabled = false;
+            } else {
+                nextBtn.disabled = false;
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < discQuestions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+                document.getElementById('nextBtn').disabled = true;
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / discQuestions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function finishTest() {
+            // Calcular pontuações DISC
+            const scores = { D: 0, I: 0, S: 0, C: 0 };
+            answers.forEach(answer => {
+                scores[answer.category] += answer.score;
+            });
+            
+            // Normalizar pontuações (0-100)
+            const maxScore = discQuestions.length * 5 / 4; // 5 questões por categoria
+            Object.keys(scores).forEach(key => {
+                scores[key] = Math.round((scores[key] / maxScore) * 100);
+            });
+            
+            // Determinar perfil primário
+            const primaryProfile = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            const secondaryProfile = Object.keys(scores).filter(k => k !== primaryProfile).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            
+            // Enviar resultados para API
+            const assessmentData = {
+                user_id: currentUser.id,
+                dominance_score: scores.D,
+                influence_score: scores.I,
+                steadiness_score: scores.S,
+                conscientiousness_score: scores.C,
+                primary_style: primaryProfile,
+                secondary_style: secondaryProfile
+            };
+            
+            fetch('/api/assessments/disc', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(assessmentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.assessment) {
+                    // Após o DISC, iniciar avaliação mental se consentimento foi dado
+                    const mentalHealthConsent = document.getElementById('consentMentalHealth');
+                    if (mentalHealthConsent && mentalHealthConsent.checked) {
+                        initializeMentalHealthTest();
+                        showSection('mentalHealthSection');
+                    } else {
+                        showResults(scores, primaryProfile, secondaryProfile, null);
+                        showSection('resultsSection');
+                    }
+                } else {
+                    alert('Erro ao salvar avaliação: ' + (data.error || 'Erro desconhecido'));
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao enviar resultados');
+            });
+        }
+
+        // Funções para Avaliação Mental
+        function initializeMentalHealthTest() {
+            currentMentalQuestionIndex = 0;
+            mentalAnswers = [];
+            document.getElementById('totalMentalQuestions').textContent = mentalHealthQuestions.length;
+            showMentalHealthQuestion();
+        }
+
+        function showMentalHealthQuestion() {
+            const question = mentalHealthQuestions[currentMentalQuestionIndex];
+            const container = document.getElementById('mentalQuestionsContainer');
+            
+            let optionsHtml = '';
+            if (question.scale === 'frequency') {
+                optionsHtml = `
+                    <div class="option" onclick="selectMentalAnswer(0)">0<br>Nunca</div>
+                    <div class="option" onclick="selectMentalAnswer(1)">1<br>Alguns dias</div>
+                    <div class="option" onclick="selectMentalAnswer(2)">2<br>Mais da metade dos dias</div>
+                    <div class="option" onclick="selectMentalAnswer(3)">3<br>Quase todos os dias</div>
+                `;
+            } else { // effectiveness
+                optionsHtml = `
+                    <div class="option" onclick="selectMentalAnswer(0)">0<br>Nunca</div>
+                    <div class="option" onclick="selectMentalAnswer(1)">1<br>Algumas vezes</div>
+                    <div class="option" onclick="selectMentalAnswer(2)">2<br>Frequentemente</div>
+                    <div class="option" onclick="selectMentalAnswer(3)">3<br>Sempre</div>
+                `;
+            }
+            
+            container.innerHTML = `
+                <div class="question-card">
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        <small><strong>${question.protocol}</strong> - Nas últimas 2 semanas, com que frequência você foi incomodado(a) por:</small>
+                    </div>
+                    <div class="question-text">${question.text}</div>
+                    <div class="options">${optionsHtml}</div>
+                </div>
+            `;
+            
+            document.getElementById('currentMentalQuestion').textContent = currentMentalQuestionIndex + 1;
+            updateMentalProgress();
+        }
+
+        function selectMentalAnswer(score) {
+            // Remover seleção anterior
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Selecionar nova opção
+            event.target.classList.add('selected');
+            
+            // Salvar resposta
+            mentalAnswers[currentMentalQuestionIndex] = {
+                question: currentMentalQuestionIndex,
+                protocol: mentalHealthQuestions[currentMentalQuestionIndex].protocol,
+                scale: mentalHealthQuestions[currentMentalQuestionIndex].scale,
+                score: score
+            };
+            
+            // Habilitar botão
+            const nextBtn = document.getElementById('nextMentalBtn');
+            const finishBtn = document.getElementById('finishMentalBtn');
+            
+            if (currentMentalQuestionIndex === mentalHealthQuestions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+                finishBtn.disabled = false;
+            } else {
+                nextBtn.disabled = false;
+            }
+        }
+
+        function nextMentalQuestion() {
+            if (currentMentalQuestionIndex < mentalHealthQuestions.length - 1) {
+                currentMentalQuestionIndex++;
+                showMentalHealthQuestion();
+                document.getElementById('nextMentalBtn').disabled = true;
+            }
+        }
+
+        function updateMentalProgress() {
+            const progress = ((currentMentalQuestionIndex + 1) / mentalHealthQuestions.length) * 100;
+            document.getElementById('mentalProgressFill').style.width = progress + '%';
+        }
+
+        function finishMentalTest() {
+            // Calcular pontuações dos protocolos
+            const protocolScores = {
+                PHQ9: { score: 0, count: 0 },
+                GAD7: { score: 0, count: 0 },
+                BURNOUT: { score: 0, count: 0 }
+            };
+            
+            mentalAnswers.forEach(answer => {
+                protocolScores[answer.protocol].score += answer.score;
+                protocolScores[answer.protocol].count++;
+            });
+
+            // Determinar severidade
+            const phq9Score = protocolScores.PHQ9.score;
+            const gad7Score = protocolScores.GAD7.score;
+            const burnoutScore = protocolScores.BURNOUT.score;
+
+            const phq9Severity = getPhq9Severity(phq9Score);
+            const gad7Severity = getGad7Severity(gad7Score);
+            const burnoutRisk = getBurnoutRisk(burnoutScore);
+
+            // Calcular score de wellness geral
+            const wellnessScore = Math.max(0, 100 - ((phq9Score * 4) + (gad7Score * 5) + (burnoutScore * 2)));
+
+            // Enviar para API
+            const mentalHealthData = {
+                user_id: currentUser.id,
+                phq9_score: phq9Score,
+                phq9_severity: phq9Severity,
+                gad7_score: gad7Score,
+                gad7_severity: gad7Severity,
+                burnout_score: burnoutScore,
+                burnout_risk: burnoutRisk,
+                wellness_score: Math.round(wellnessScore)
+            };
+
+            fetch('/api/assessments/mental-health', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(mentalHealthData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.assessment) {
+                    // Mostrar resultados completos
+                    showCompleteResults(mentalHealthData, data);
+                    showSection('resultsSection');
+                } else {
+                    alert('Erro ao salvar avaliação mental: ' + (data.error || 'Erro desconhecido'));
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao enviar resultados de saúde mental');
+            });
+        }
+
+        function getPhq9Severity(score) {
+            if (score <= 4) return 'minimal';
+            if (score <= 9) return 'mild';
+            if (score <= 14) return 'moderate';
+            if (score <= 19) return 'moderately_severe';
+            return 'severe';
+        }
+
+        function getGad7Severity(score) {
+            if (score <= 4) return 'minimal';
+            if (score <= 9) return 'mild';
+            if (score <= 14) return 'moderate';
+            return 'severe';
+        }
+
+        function getBurnoutRisk(score) {
+            if (score <= 16) return 'low';
+            if (score <= 25) return 'moderate';
+            return 'high';
+        }
+
+        function showCompleteResults(mentalData, apiResponse) {
+            // Primeiro mostrar resultados DISC (se existir)
+            showDISCResults();
+            
+            // Mostrar resultados de saúde mental
+            showMentalHealthResults(mentalData, apiResponse);
+        }
+
+        function showDISCResults() {
+            // Esta função será chamada para mostrar os resultados DISC anteriormente calculados
+            // Por simplicidade, vamos buscar os dados via API
+            fetch(`/api/users/${currentUser.id}/assessments`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.disc_assessments && data.disc_assessments.length > 0) {
+                        const latestDisc = data.disc_assessments[0];
+                        showDISCChart(latestDisc);
+                    }
+                });
+        }
+
+        function showDISCChart(discData) {
+            const chartContainer = document.getElementById('profileChart');
+            const profiles = {
+                'D': { name: 'Dominância', color: '#e53e3e' },
+                'I': { name: 'Influência', color: '#38a169' },
+                'S': { name: 'Estabilidade', color: '#3182ce' },
+                'C': { name: 'Conformidade', color: '#805ad5' }
+            };
+            
+            const scores = {
+                'D': discData.dominance_score,
+                'I': discData.influence_score,
+                'S': discData.steadiness_score,
+                'C': discData.conscientiousness_score
+            };
+            
+            chartContainer.innerHTML = Object.keys(profiles).map(key => `
+                <div class="profile-item">
+                    <div class="profile-letter" style="color: ${profiles[key].color}">${key}</div>
+                    <div class="profile-score" style="color: ${profiles[key].color}">${scores[key]}</div>
+                    <div class="profile-name">${profiles[key].name}</div>
+                </div>
+            `).join('');
+            
+            // Descrição do perfil
+            const descriptions = {
+                'D': 'Orientado para resultados, gosta de desafios e toma decisões rapidamente.',
+                'I': 'Comunicativo, entusiasta e gosta de trabalhar com pessoas.',
+                'S': 'Valoriza estabilidade, é confiável e trabalha bem em equipe.',
+                'C': 'Analítico, preciso e focado na qualidade.'
+            };
+            
+            document.getElementById('profileDescription').innerHTML = `
+                <div class="alert alert-info">
+                    <h4>Perfil Principal: ${discData.primary_style} (${profiles[discData.primary_style].name})</h4>
+                    <p>${descriptions[discData.primary_style]}</p>
+                    ${discData.secondary_style ? `<p><strong>Perfil Secundário:</strong> ${discData.secondary_style} (${profiles[discData.secondary_style].name})</p>` : ''}
+                </div>
+            `;
+        }
+
+        function showMentalHealthResults(mentalData, apiResponse) {
+            const container = document.getElementById('mentalHealthResults');
+            
+            // Interpretações das pontuações
+            const interpretations = {
+                'minimal': { color: '#38a169', text: 'Mínimo - Dentro da normalidade' },
+                'mild': { color: '#ecc94b', text: 'Leve - Atenção recomendada' },
+                'moderate': { color: '#ed8936', text: 'Moderado - Acompanhamento sugerido' },
+                'moderately_severe': { color: '#e53e3e', text: 'Moderadamente Severo - Intervenção recomendada' },
+                'severe': { color: '#c53030', text: 'Severo - Intervenção urgente' },
+                'low': { color: '#38a169', text: 'Baixo' },
+                'high': { color: '#e53e3e', text: 'Alto' }
+            };
+
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div class="profile-item">
+                        <h4 style="color: #4a5568;">PHQ-9 (Depressão)</h4>
+                        <div class="profile-score" style="color: ${interpretations[mentalData.phq9_severity].color};">${mentalData.phq9_score}</div>
+                        <div class="profile-name">${interpretations[mentalData.phq9_severity].text}</div>
+                    </div>
+                    <div class="profile-item">
+                        <h4 style="color: #4a5568;">GAD-7 (Ansiedade)</h4>
+                        <div class="profile-score" style="color: ${interpretations[mentalData.gad7_severity].color};">${mentalData.gad7_score}</div>
+                        <div class="profile-name">${interpretations[mentalData.gad7_severity].text}</div>
+                    </div>
+                    <div class="profile-item">
+                        <h4 style="color: #4a5568;">Burnout</h4>
+                        <div class="profile-score" style="color: ${interpretations[mentalData.burnout_risk].color};">${mentalData.burnout_score}</div>
+                        <div class="profile-name">Risco ${interpretations[mentalData.burnout_risk].text}</div>
+                    </div>
+                    <div class="profile-item">
+                        <h4 style="color: #4a5568;">Wellness Score</h4>
+                        <div class="profile-score" style="color: #38a169;">${mentalData.wellness_score}</div>
+                        <div class="profile-name">Bem-estar Geral</div>
+                    </div>
+                </div>
+            `;
+
+            // Verificar se precisa de supervisão profissional
+            if (apiResponse.requires_professional_oversight) {
+                document.getElementById('professionalRecommendations').innerHTML = `
+                    <div class="alert" style="background: #fed7d7; border: 1px solid #fc8181; color: #742a2a;">
+                        <h4>🔔 Supervisão Profissional Acionada</h4>
+                        <p>Com base nos resultados da sua avaliação, nossa equipe de profissionais licenciados foi notificada para oferecer suporte adequado. Você receberá contato em até 24 horas.</p>
+                        <p><small>Esta é uma medida preventiva de cuidado, em conformidade com protocolos de saúde mental.</small></p>
+                    </div>
+                `;
+            } else {
+                document.getElementById('professionalRecommendations').innerHTML = `
+                    <div class="alert alert-success">
+                        <h4>✅ Resultados Dentro dos Parâmetros Esperados</h4>
+                        <p>Seus resultados não indicam necessidade de intervenção imediata. Continue cuidando do seu bem-estar!</p>
+                    </div>
+                `;
+            }
+
+            // Buscar insights personalizados
+            fetch(`/api/users/${currentUser.id}/assessments`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.personalized_insights && data.personalized_insights.length > 0) {
+                        const insights = data.personalized_insights.map(insight => `
+                            <div class="alert alert-info">
+                                <h4>${insight.title}</h4>
+                                <p>${insight.content}</p>
+                                <small>Categoria: ${insight.category} | Prioridade: ${insight.priority}</small>
+                            </div>
+                        `).join('');
+                        
+                        document.getElementById('personalizedInsights').innerHTML = `
+                            <h3>💡 Recomendações Personalizadas</h3>
+                            ${insights}
+                        `;
+                    }
+                });
+        }
+
+        function exportResults() {
+            fetch(`/api/users/${currentUser.id}/data-export`)
+                .then(response => response.json())
+                .then(data => {
+                    const dataStr = JSON.stringify(data, null, 2);
+                    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `mindbridge_dados_${currentUser.name.replace(/\s+/g, '_')}.json`;
+                    link.click();
+                    
+                    alert('Dados exportados com conformidade GDPR!');
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao exportar dados');
+                });
+        }
+
+        // Função legacy mantida para compatibilidade
+        function showResults(scores, primary, secondary, mentalData) {
+            // Mostrar gráfico de perfil
+            const chartContainer = document.getElementById('profileChart');
+            const profiles = {
+                'D': { name: 'Dominância', color: '#e53e3e' },
+                'I': { name: 'Influência', color: '#38a169' },
+                'S': { name: 'Estabilidade', color: '#3182ce' },
+                'C': { name: 'Conformidade', color: '#805ad5' }
+            };
+            
+            chartContainer.innerHTML = Object.keys(profiles).map(key => `
+                <div class="profile-item">
+                    <div class="profile-letter" style="color: ${profiles[key].color}">${key}</div>
+                    <div class="profile-score" style="color: ${profiles[key].color}">${scores[key]}</div>
+                    <div class="profile-name">${profiles[key].name}</div>
+                </div>
+            `).join('');
+            
+            // Descrição do perfil
+            const descriptions = {
+                'D': 'Você é orientado para resultados, gosta de desafios e toma decisões rapidamente. Prefere liderar e assumir controle.',
+                'I': 'Você é comunicativo, entusiasta e gosta de trabalhar com pessoas. Tem facilidade para influenciar e motivar outros.',
+                'S': 'Você valoriza estabilidade, é confiável e trabalha bem em equipe. Prefere ambientes harmoniosos e previsíveis.',
+                'C': 'Você é analítico, preciso e focado na qualidade. Gosta de seguir procedimentos e atentar para detalhes.'
+            };
+            
+            document.getElementById('profileDescription').innerHTML = `
+                <div class="alert alert-info">
+                    <h3>Seu Perfil Principal: ${primary} (${profiles[primary].name})</h3>
+                    <p>${descriptions[primary]}</p>
+                    <h4>Perfil Secundário: ${secondary} (${profiles[secondary].name})</h4>
+                </div>
+            `;
+            
+            // Buscar insights personalizados
+            fetch(`/api/users/${currentUser.id}/assessments`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.personalized_insights && data.personalized_insights.length > 0) {
+                        const insights = data.personalized_insights.map(insight => `
+                            <div class="alert alert-success">
+                                <h4>${insight.title}</h4>
+                                <p>${insight.content}</p>
+                            </div>
+                        `).join('');
+                        
+                        document.getElementById('personalizedInsights').innerHTML = `
+                            <h3>💡 Insights Personalizados</h3>
+                            ${insights}
+                        `;
+                    }
+                });
+        }
+    </script>
+</body>
+</html>

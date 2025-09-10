@@ -17,6 +17,7 @@ from src.routes.user import user_bp
 from src.routes.assessment import assessment_bp
 from src.routes.compliance_api import compliance_bp
 from src.routes.ai_analysis import ai_analysis_bp
+from src.routes.behavioral_analysis import behavioral_analysis_bp
 from datetime import datetime
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
@@ -44,6 +45,7 @@ app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(assessment_bp, url_prefix='/api')
 app.register_blueprint(compliance_bp, url_prefix='/api/v1')
 app.register_blueprint(ai_analysis_bp, url_prefix='/api/v1')
+app.register_blueprint(behavioral_analysis_bp, url_prefix='/api/v1')
 
 @app.route('/')
 def index():

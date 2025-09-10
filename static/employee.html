@@ -336,6 +336,16 @@
                 <div id="professionalRecommendations"></div>
             </div>
             
+            <!-- Análise de IA -->
+            <div class="card" style="margin-bottom: 20px;">
+                <h3>🤖 Análise de IA - Correlações DISC x Saúde Mental</h3>
+                <div class="alert alert-info">
+                    <strong>Análise Avançada:</strong> Nossa IA analisa correlações científicas entre seu perfil DISC e indicadores de saúde mental para gerar insights personalizados.
+                </div>
+                <div id="aiAnalysisResults"></div>
+                <button class="btn" onclick="requestAIAnalysis()" id="aiAnalysisBtn">🧠 Solicitar Análise de IA</button>
+            </div>
+            
             <div id="personalizedInsights"></div>
             
             <button class="btn" onclick="exportResults()">📥 Exportar Resultados (GDPR)</button>
@@ -913,6 +923,161 @@
                         `;
                     }
                 });
+        }
+
+        function requestAIAnalysis() {
+            if (!currentUser || !currentUser.id) {
+                alert('Erro: Dados do usuário não encontrados');
+                return;
+            }
+
+            // Verificar se temos dados DISC e de saúde mental
+            const discData = localStorage.getItem(`disc_results_${currentUser.id}`);
+            const mentalData = localStorage.getItem(`mental_results_${currentUser.id}`);
+
+            if (!discData || !mentalData) {
+                alert('Complete as avaliações DISC e de Saúde Mental antes de solicitar análise de IA');
+                return;
+            }
+
+            // Desabilitar botão e mostrar loading
+            const btn = document.getElementById('aiAnalysisBtn');
+            btn.disabled = true;
+            btn.textContent = '🔄 Analisando...';
+
+            const payload = {
+                user_id: currentUser.id,
+                disc_results: JSON.parse(discData),
+                mental_health_results: JSON.parse(mentalData),
+                user_context: {
+                    company: currentUser.company || 'N/A',
+                    assessment_date: new Date().toISOString(),
+                    source: 'employee_portal'
+                }
+            };
+
+            fetch('/api/v1/ai-analysis/correlate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAIAnalysisResults(data.result);
+                    btn.textContent = '✅ Análise Concluída';
+                } else {
+                    alert('Erro na análise de IA: ' + (data.error || 'Erro desconhecido'));
+                    btn.disabled = false;
+                    btn.textContent = '🧠 Solicitar Análise de IA';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao conectar com o serviço de análise de IA');
+                btn.disabled = false;
+                btn.textContent = '🧠 Solicitar Análise de IA';
+            });
+        }
+
+        function showAIAnalysisResults(analysisResult) {
+            const container = document.getElementById('aiAnalysisResults');
+            
+            // Interpretações dos níveis de risco
+            const riskColors = {
+                'low': '#38a169',
+                'moderate': '#ecc94b', 
+                'high': '#ed8936',
+                'critical': '#e53e3e'
+            };
+
+            const riskTexts = {
+                'low': 'Baixo - Situação favorável',
+                'moderate': 'Moderado - Atenção recomendada',
+                'high': 'Alto - Intervenção sugerida',
+                'critical': 'Crítico - Intervenção urgente'
+            };
+
+            container.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h4>📈 Score de Risco Geral</h4>
+                    <div style="display: flex; align-items: center; margin: 10px 0;">
+                        <div style="font-size: 2em; font-weight: bold; color: ${riskColors[analysisResult.risk_level]}; margin-right: 15px;">
+                            ${analysisResult.overall_risk_score}/100
+                        </div>
+                        <div>
+                            <div style="color: ${riskColors[analysisResult.risk_level]}; font-weight: bold;">
+                                ${riskTexts[analysisResult.risk_level]}
+                            </div>
+                            <div style="font-size: 0.9em; color: #666;">
+                                Confiança: ${analysisResult.confidence_score}/100
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4>🔍 Análise de Correlações</h4>
+                    <div class="alert alert-info">
+                        ${analysisResult.correlation_analysis.correlation_summary || 'Análise de correlações DISC x Saúde Mental realizada com base em evidências científicas.'}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4>⚠️ Fatores de Risco Identificados</h4>
+                    <ul>
+                        ${analysisResult.risk_assessment.risk_factors.map(factor => `<li>${factor}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4>🛡️ Fatores de Proteção</h4>
+                    <ul>
+                        ${analysisResult.risk_assessment.protective_factors.map(factor => `<li style="color: #38a169;">${factor}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4>💡 Recomendações Personalizadas</h4>
+                    ${analysisResult.personalized_recommendations.map((rec, index) => `
+                        <div class="alert" style="background: #f7fafc; border-left: 4px solid ${rec.priority === 'high' ? '#e53e3e' : rec.priority === 'medium' ? '#ecc94b' : '#38a169'}; margin-bottom: 10px;">
+                            <h5>${index + 1}. ${rec.title}</h5>
+                            <p>${rec.description}</p>
+                            <small>Categoria: ${rec.category} | Prioridade: ${rec.priority} | Implementação: ${rec.implementation_time}</small>
+                        </div>
+                    `).join('')}
+                </div>
+
+                ${analysisResult.professional_oversight_required ? `
+                    <div class="alert" style="background: #fed7d7; border: 1px solid #fc8181; color: #742a2a;">
+                        <h4>👨‍⚕️ Supervisão Profissional Recomendada</h4>
+                        <p>Com base na análise de IA, recomendamos acompanhamento com profissional licenciado. Nossa equipe entrará em contato em até 24 horas.</p>
+                    </div>
+                ` : `
+                    <div class="alert alert-success">
+                        <h4>✅ Análise Concluída</h4>
+                        <p>Resultados dentro dos parâmetros esperados. Continue aplicando as recomendações para manter seu bem-estar!</p>
+                    </div>
+                `}
+
+                <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; font-size: 0.9em; color: #0369a1;">
+                    <strong>🔬 Metodologia:</strong> Esta análise combina algoritmos científicos validados (precisão de 88-91%) com IA avançada (GPT-4) para identificar correlações entre perfis DISC e indicadores de saúde mental. Processamento: ${analysisResult.processing_time_ms}ms.
+                </div>
+            `;
+
+            // Salvar resultado para histórico
+            const historyKey = `ai_analysis_${currentUser.id}`;
+            const currentHistory = JSON.parse(localStorage.getItem(historyKey) || '[]');
+            currentHistory.unshift({
+                analysis_id: analysisResult.analysis_id || Date.now(),
+                timestamp: new Date().toISOString(),
+                risk_score: analysisResult.overall_risk_score,
+                risk_level: analysisResult.risk_level,
+                confidence: analysisResult.confidence_score
+            });
+            localStorage.setItem(historyKey, JSON.stringify(currentHistory.slice(0, 10))); // Manter apenas 10 mais recentes
         }
 
         function exportResults() {

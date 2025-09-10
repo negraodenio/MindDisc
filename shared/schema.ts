@@ -362,6 +362,45 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
 
+// Government API Schemas
+export const susEstablishmentSearchSchema = z.object({
+  cep: z.string().min(8, "CEP deve ter pelo menos 8 caracteres"),
+  tipo: z.string().optional().default("CAPS"),
+  raio_km: z.number().optional().default(20)
+});
+
+export const susServiceSearchSchema = z.object({
+  municipio: z.string().optional().default("São Paulo"),
+  tipo: z.string().optional()
+});
+
+export const susAvailabilityCheckSchema = z.object({
+  cnes: z.string().min(1, "CNES é obrigatório"),
+  tipo_atendimento: z.string().min(1, "Tipo de atendimento é obrigatório")
+});
+
+export const inssConsultationSchema = z.object({
+  cpf: z.string().min(11, "CPF deve ter 11 dígitos")
+});
+
+export const inssEligibilitySchema = z.object({
+  cpf: z.string().min(11, "CPF deve ter 11 dígitos"),
+  tempo_contribuicao_meses: z.number().optional().default(0),
+  salario_atual: z.number().optional().default(0),
+  cid: z.string().optional()
+});
+
+export const siafiExpenseSearchSchema = z.object({
+  ente_federativo: z.string().min(2, "Ente federativo deve ter pelo menos 2 caracteres"),
+  ano: z.number().optional().default(new Date().getFullYear())
+});
+
+export const rapsServiceSearchSchema = z.object({
+  municipio: z.string().min(1, "Município é obrigatório"),
+  tipo_servico: z.string().optional(),
+  urgencia: z.boolean().optional().default(false)
+});
+
 // Types
 export type Company = typeof companies.$inferSelect;
 export type InsertCompany = z.infer<typeof insertCompanySchema>;
@@ -378,3 +417,12 @@ export type InsertActionPlan = z.infer<typeof insertActionPlanSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type LoginCredentials = z.infer<typeof loginSchema>;
+
+// Government API Types
+export type SUSEstablishmentSearch = z.infer<typeof susEstablishmentSearchSchema>;
+export type SUSServiceSearch = z.infer<typeof susServiceSearchSchema>;
+export type SUSAvailabilityCheck = z.infer<typeof susAvailabilityCheckSchema>;
+export type INSSConsultation = z.infer<typeof inssConsultationSchema>;
+export type INSSEligibility = z.infer<typeof inssEligibilitySchema>;
+export type SIAFIExpenseSearch = z.infer<typeof siafiExpenseSearchSchema>;
+export type RAPSServiceSearch = z.infer<typeof rapsServiceSearchSchema>;

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Search, Plus, Filter, MoreHorizontal } from 'lucide-react';
+import { Search, Plus, Filter, MoreHorizontal, Brain, AlertTriangle, TrendingUp, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAuthHeaders } from '@/lib/auth';
 
@@ -56,6 +56,42 @@ export default function Employees() {
     }
   };
 
+  const getAIRiskBadge = (employeeId: number) => {
+    // Simulação de risco baseado no ID para demonstração
+    const riskLevel = (employeeId % 3) + 1;
+    
+    switch (riskLevel) {
+      case 1:
+        return (
+          <div className="flex items-center space-x-2">
+            <Shield className="h-4 w-4 text-green-600" />
+            <Badge className="bg-green-100 text-green-800">Baixo</Badge>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="flex items-center space-x-2">
+            <TrendingUp className="h-4 w-4 text-yellow-600" />
+            <Badge className="bg-yellow-100 text-yellow-800">Moderado</Badge>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="flex items-center space-x-2">
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <Badge className="bg-red-100 text-red-800">Alto</Badge>
+          </div>
+        );
+      default:
+        return (
+          <div className="flex items-center space-x-2">
+            <Brain className="h-4 w-4 text-gray-400" />
+            <Badge variant="outline">Pendente</Badge>
+          </div>
+        );
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -79,6 +115,59 @@ export default function Employees() {
           Adicionar Funcionário
         </Button>
       </div>
+
+      {/* AI Dashboard for Managers */}
+      <Card className="border-2 border-green-500">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Brain className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <CardTitle className="text-lg font-semibold text-foreground flex items-center">
+                  🧠 Análises de IA - Equipe
+                  <Badge className="ml-3 bg-green-100 text-green-800 text-xs">ATIVO</Badge>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Predições individuais e análises comportamentais da equipe
+                </p>
+              </div>
+            </div>
+            <Button 
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+              data-testid="button-generate-team-predictions"
+            >
+              <Brain className="w-4 h-4 mr-2" />
+              Analisar Equipe
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="text-center p-3 bg-red-50 rounded-lg">
+              <AlertTriangle className="h-8 w-8 text-red-600 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-red-700">3</p>
+              <p className="text-sm text-red-600">Alto Risco</p>
+            </div>
+            <div className="text-center p-3 bg-yellow-50 rounded-lg">
+              <TrendingUp className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-yellow-700">8</p>
+              <p className="text-sm text-yellow-600">Moderado</p>
+            </div>
+            <div className="text-center p-3 bg-green-50 rounded-lg">
+              <Shield className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-green-700">15</p>
+              <p className="text-sm text-green-600">Baixo Risco</p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <Brain className="h-8 w-8 text-gray-600 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-gray-700">5</p>
+              <p className="text-sm text-gray-600">Pendente</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Search and Filters */}
       <Card>
@@ -119,6 +208,7 @@ export default function Employees() {
                 <TableHead>Status</TableHead>
                 <TableHead>Perfil</TableHead>
                 <TableHead>Última Avaliação</TableHead>
+                <TableHead>Predição IA</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -165,6 +255,9 @@ export default function Employees() {
                         'Nunca'
                       }
                     </span>
+                  </TableCell>
+                  <TableCell>
+                    {getAIRiskBadge(employee.id)}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button 

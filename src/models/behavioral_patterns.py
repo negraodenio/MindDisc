@@ -8,6 +8,7 @@ Mantém valor competitivo com conformidade ética e legal total.
 
 from typing import Dict, List, Optional
 import json
+from datetime import datetime
 
 class BehavioralPatternAnalyzer:
     """

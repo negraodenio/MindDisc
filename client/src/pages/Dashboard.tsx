@@ -34,7 +34,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getAuthHeaders } from '@/lib/auth';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['/api/dashboard/metrics', user?.companyId],
@@ -44,6 +44,11 @@ export default function Dashboard() {
         headers: getAuthHeaders(),
       });
       if (!response.ok) {
+        if (response.status === 403 || response.status === 401) {
+          // Token expirado ou inválido - fazer logout e redirecionar
+          logout();
+          throw new Error('Sessão expirada. Faça login novamente.');
+        }
         throw new Error('Failed to fetch dashboard data');
       }
       return response.json();

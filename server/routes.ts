@@ -22,7 +22,7 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
-const JWT_SECRET = process.env.JWT_SECRET || "minddisc-pro-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET || "minddisc-pro-secret-key-dev";
 
 // Extend Request interface to include user
 interface AuthenticatedRequest extends Request {
@@ -51,7 +51,12 @@ const authenticateToken = async (req: AuthenticatedRequest, res: Response, next:
   }
 };
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<Express> {
+  // Health check
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "OK", timestamp: new Date().toISOString() });
+  });
+
   // Authentication routes
   app.post("/api/auth/login", async (req, res) => {
     try {
@@ -713,6 +718,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
-  return httpServer;
+  // Don't create HTTP server here - let index.ts handle it after all middleware
+  return app;
 }

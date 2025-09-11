@@ -14,7 +14,10 @@ app.use((req, res, next) => {
 
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
+    // Only capture response bodies if it's NOT an auth route to prevent JWT token leakage
+    if (!req.originalUrl.includes('/api/auth')) {
+      capturedJsonResponse = bodyJson;
+    }
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
@@ -22,7 +25,9 @@ app.use((req, res, next) => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
+      
+      // Don't log response bodies for auth routes to prevent token/PII leakage  
+      if (capturedJsonResponse && !path.includes("/auth")) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
 

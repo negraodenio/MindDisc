@@ -22,9 +22,36 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
-const JWT_SECRET = process.env.JWT_SECRET || "minddisc-pro-secret-key-dev";
+// Define PublicUser type for secure API responses (never expose password hash or sensitive data)
+export type PublicUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  companyId: string | null;
+};
 
-// Extend Request interface to include user
+// Helper function to sanitize user data for API responses
+const sanitizeUser = (user: User): PublicUser => {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role || "employee", // Handle nullable role field with default
+    companyId: user.companyId
+  };
+};
+
+const JWT_SECRET = process.env.JWT_SECRET || "minddisc-dev-secret";
+if (!process.env.JWT_SECRET) {
+  console.error("JWT_SECRET environment variable is required for security");
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
+  console.warn("Using development JWT secret - NOT SECURE FOR PRODUCTION");
+}
+
+// Extend Request interface to include sanitized user data
 interface AuthenticatedRequest extends Request {
   user?: User;
 }
@@ -152,13 +179,18 @@ export async function registerRoutes(app: Express): Promise<Express> {
 
   // User routes
   app.get("/api/users/me", authenticateToken, async (req: AuthenticatedRequest, res) => {
-    res.json(req.user);
+    if (!req.user) {
+      return res.status(401).json({ message: 'Usuário não encontrado' });
+    }
+    res.json(sanitizeUser(req.user));
   });
 
   app.get("/api/users/company/:companyId", authenticateToken, async (req, res) => {
     try {
       const users = await storage.getUsersByCompany(req.params.companyId);
-      res.json(users);
+      // Sanitize all user data to remove password hashes and sensitive data
+      const sanitizedUsers = users.map(user => sanitizeUser(user));
+      res.json(sanitizedUsers);
     } catch (error) {
       res.status(500).json({ message: "Erro ao buscar usuários" });
     }

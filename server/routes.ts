@@ -42,9 +42,9 @@ const sanitizeUser = (user: User): PublicUser => {
   };
 };
 
-const JWT_SECRET = process.env.JWT_SECRET || "minddisc-dev-secret";
-if (!process.env.JWT_SECRET) {
-  console.error("JWT_SECRET environment variable is required for security");
+const JWT_SECRET = process.env.SESSION_SECRET || "minddisc-dev-secret";
+if (!process.env.SESSION_SECRET) {
+  console.error("SESSION_SECRET environment variable is required for security");
   if (process.env.NODE_ENV === 'production') {
     process.exit(1);
   }
